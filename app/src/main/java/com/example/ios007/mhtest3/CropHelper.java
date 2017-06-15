@@ -10,34 +10,19 @@ import android.util.Log;
 
 import java.io.File;
 
-/**
- * Created with Android Studio.
- * User: ryan@xisue.com
- * Date: 10/1/14
- * Time: 11:08 AM
- * Desc: CropHelper
- * Revision:
- * - 10:00 2014/10/03 Basic utils.
- * - 11:30 2014/10/03 Add static methods for generating crop intents.
- * - 15:00 2014/10/03 Finish the logic of handling crop intents.
- * - 12:20 2014/10/04 Add "scaleUpIfNeeded" crop options for scaling up cropped images if the size is too small.
- * - 16:30 2015/05/22 Fixed the error that crop from gallery doest work on some Kitkat devices.
- * - 23:30 2015/08/20 Add support to pick or capture photo without crop.
- * - 23:00 2015/09/05 Add compress features.
- */
 public class CropHelper {
 
     public static final String TAG = "CropHelper";
 
-    /**
-     * request code of Activities or Fragments
-     * You will have to change the values of the request codes below if they conflict with your own.
-     */
     public static final int REQUEST_CROP = 127;
     public static final int REQUEST_CAMERA = 128;
 
     public static final String CROP_CACHE_FOLDER = "PhotoCropper";
 
+    /**
+     * 获得图片URI
+     * @return
+     */
     public static Uri generateUri() {
         File cacheFolder = new File(Environment.getExternalStorageDirectory() + File.separator + CROP_CACHE_FOLDER);
         if (!cacheFolder.exists()) {
@@ -56,12 +41,24 @@ public class CropHelper {
                 .build();
     }
 
+    /**
+     * 检查图片是否已经裁剪
+     * @param uri
+     * @return
+     */
     public static boolean isPhotoReallyCropped(Uri uri) {
         File file = new File(uri.getPath());
         long length = file.length();
         return length > 0;
     }
 
+    /**
+     * 处理相册和相机返回状态
+     * @param handler
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     public static void handleResult(CropHandler handler, int requestCode, int resultCode, Intent data) {
         if (handler == null) return;
 
@@ -105,6 +102,11 @@ public class CropHelper {
         }
     }
 
+    /**
+     * 压缩照片
+     * @param handler
+     * @param cropParams
+     */
     private static void onPhotoCropped(CropHandler handler, CropParams cropParams) {
         Uri originUri = cropParams.uri;
         Uri compressUri = CropHelper.generateUri();
@@ -113,12 +115,21 @@ public class CropHelper {
     }
 
 
-    // Crop Intents
-
+    /**
+     * 直接裁剪框
+     * @param params
+     * @return
+     */
     private static Intent buildCropFromUriIntent(CropParams params) {
         return buildCropIntent("com.android.camera.action.CROP", params);
     }
 
+    /**
+     * 生成裁剪框
+     * @param action
+     * @param params
+     * @return
+     */
     public static Intent buildCropIntent(String action, CropParams params) {
         return new Intent(action)
                 .setDataAndType(params.uri, params.type)
@@ -135,8 +146,10 @@ public class CropHelper {
                 .putExtra(MediaStore.EXTRA_OUTPUT, params.uri);
     }
 
-    // Clear Cache
-
+    /**
+     * 清楚缓存文件
+     * @return
+     */
     public static boolean clearCacheDir() {
         File cacheFolder = new File(Environment.getExternalStorageDirectory() + File.separator + CROP_CACHE_FOLDER);
         if (cacheFolder.exists() && cacheFolder.listFiles() != null) {
