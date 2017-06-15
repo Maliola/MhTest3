@@ -73,7 +73,6 @@ public class CropHelper {
             switch (requestCode) {
                 case REQUEST_CROP:
                     if (isPhotoReallyCropped(cropParams.uri)) {
-                        Log.d(TAG, "Photo cropped!");
                         onPhotoCropped(handler, cropParams);
                         break;
                     } else {
@@ -83,15 +82,15 @@ public class CropHelper {
                                 String path = CropFileUtils.getSmartFilePath(context, data.getData());
                                 boolean result = CropFileUtils.copyFile(path, cropParams.uri.getPath());
                                 if (!result) {
-                                    handler.onFailed("Copy file to cached folder failed");
+                                    handler.onFailed("拷贝文件失败");
                                     break;
                                 }
                             } else {
-                                handler.onFailed("Returned data is null " + data);
+                                handler.onFailed("返回数据是空" + data);
                                 break;
                             }
                         } else {
-                            handler.onFailed("CropHandler's context MUST NOT be null!");
+                            handler.onFailed("context不能是空");
                         }
                     }
                 case REQUEST_CAMERA:
